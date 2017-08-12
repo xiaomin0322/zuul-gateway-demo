@@ -13,3 +13,9 @@ create table `gateway_api_define` (
 
 INSERT INTO gateway_api_define (id, path, service_id, retryable, strip_prefix, url, enabled) VALUES ('pppp', '/pppp/**', null,0,1, 'http://localhost:8090', 1);
 INSERT INTO gateway_api_define (id, path, service_id, retryable, strip_prefix, url, enabled) VALUES ('xxxx', '/xxxx/**', null,0,1, 'http://localhost:8090', 1);
+INSERT INTO `gateway_api_define` VALUES ('myapp3', '/myapp3/**', 'myapp2', '', 0, 1, 1, NULL);
+INSERT INTO `gateway_api_define` VALUES ('myapp4', '/myapp4/**', 'myapp2', '', 0, 1, 1, '');
+INSERT INTO `gateway_api_define` VALUES ('myapp5', '/myapp5/**', 'marathon', '', 0, 1, 1, '');
+INSERT INTO `gateway_api_define` VALUES ('myapp6', '/myapp6/**', 'mesos', '', 0, 1, 1, '');
+INSERT INTO `gateway_api_define` VALUES ('myapp7', '/myapp7/**', '', 'http://192.168.1.231:8080', 0, 1, 1, '');
+INSERT INTO `gateway_api_define` VALUES ('myapp8', '/myapp8/**', '', 'http://192.168.1.231:8080', 0, 1, 1, '');
