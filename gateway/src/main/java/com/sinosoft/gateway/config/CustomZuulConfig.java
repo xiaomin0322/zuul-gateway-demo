@@ -1,8 +1,10 @@
 package com.sinosoft.gateway.config;
 
 import com.sinosoft.gateway.zuul.CustomRouteLocator;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,10 +22,12 @@ public class CustomZuulConfig {
     ServerProperties server;
     @Autowired
     JdbcTemplate jdbcTemplate;
+    @Autowired
+    DiscoveryClient discovery;
 
     @Bean
     public CustomRouteLocator routeLocator() {
-        CustomRouteLocator routeLocator = new CustomRouteLocator(this.server.getServletPrefix(), this.zuulProperties);
+        CustomRouteLocator routeLocator = new CustomRouteLocator(this.server.getServletPrefix(),discovery, this.zuulProperties);
         routeLocator.setJdbcTemplate(jdbcTemplate);
         return routeLocator;
     }

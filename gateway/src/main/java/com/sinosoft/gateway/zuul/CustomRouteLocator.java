@@ -1,36 +1,37 @@
 package com.sinosoft.gateway.zuul;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.cloud.netflix.zuul.filters.RefreshableRouteLocator;
-import org.springframework.cloud.netflix.zuul.filters.SimpleRouteLocator;
-import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
-import org.springframework.cloud.netflix.zuul.filters.ZuulProperties.ZuulRoute;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.util.StringUtils;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.cloud.netflix.zuul.filters.RefreshableRouteLocator;
+import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
+import org.springframework.cloud.netflix.zuul.filters.ZuulProperties.ZuulRoute;
+import org.springframework.cloud.netflix.zuul.filters.discovery.DiscoveryClientRouteLocator;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.util.StringUtils;
+
 /**
  * Created by xujingfeng on 2017/4/1.
  */
-public class CustomRouteLocator extends SimpleRouteLocator implements RefreshableRouteLocator{
+public class CustomRouteLocator extends DiscoveryClientRouteLocator implements RefreshableRouteLocator{
 
     public final static Logger logger = LoggerFactory.getLogger(CustomRouteLocator.class);
 
     private JdbcTemplate jdbcTemplate;
 
     private ZuulProperties properties;
-
+    
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate){
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public CustomRouteLocator(String servletPath, ZuulProperties properties) {
-        super(servletPath, properties);
+    public CustomRouteLocator(String servletPath,DiscoveryClient discovery, ZuulProperties properties) {
+        super(servletPath,discovery,properties);
         this.properties = properties;
         logger.info("servletPath:{}",servletPath);
     }
@@ -48,7 +49,7 @@ public class CustomRouteLocator extends SimpleRouteLocator implements Refreshabl
     }
 
     @Override
-    protected Map<String, ZuulRoute> locateRoutes() {
+    protected LinkedHashMap<String, ZuulRoute> locateRoutes() {
         LinkedHashMap<String, ZuulRoute> routesMap = new LinkedHashMap<String, ZuulRoute>();
         //从application.properties中加载路由信息
         routesMap.putAll(super.locateRoutes());
@@ -77,7 +78,7 @@ public class CustomRouteLocator extends SimpleRouteLocator implements Refreshabl
         Map<String, ZuulRoute> routes = new LinkedHashMap<>();
         List<ZuulRouteVO> results = jdbcTemplate.query("select * from gateway_api_define where enabled = true ",new BeanPropertyRowMapper<>(ZuulRouteVO.class));
         for (ZuulRouteVO result : results) {
-            if(org.apache.commons.lang3.StringUtils.isBlank(result.getPath()) || org.apache.commons.lang3.StringUtils.isBlank(result.getUrl()) ){
+            if(org.apache.commons.lang3.StringUtils.isBlank(result.getPath()) /*|| org.apache.commons.lang3.StringUtils.isBlank(result.getUrl())*/ ){
                 continue;
             }
             ZuulRoute zuulRoute = new ZuulRoute();
@@ -86,6 +87,8 @@ public class CustomRouteLocator extends SimpleRouteLocator implements Refreshabl
             } catch (Exception e) {
                 logger.error("=============load zuul route info from db with error==============",e);
             }
+           // zuulRoute.setUrl(null);
+           // zuulRoute.setRetryable(null);
             routes.put(zuulRoute.getPath(),zuulRoute);
         }
         return routes;

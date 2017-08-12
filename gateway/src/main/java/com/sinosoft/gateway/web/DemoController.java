@@ -30,6 +30,7 @@ public class DemoController {
     public String watchNowRoute(){
         //可以用debug模式看里面具体是什么
         Map<String, Object> handlerMap = zuulHandlerMapping.getHandlerMap();
+        System.out.println(handlerMap);
         return "watchNowRoute";
     }
 

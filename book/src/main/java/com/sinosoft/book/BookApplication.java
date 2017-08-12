@@ -12,7 +12,7 @@ public class BookApplication {
     @RequestMapping(value = "/available")
     public String available() {
         System.out.println("Spring in Action");
-        return "Spring in Action";
+        return "Spring in Action1111";
     }
 
     @RequestMapping(value = "/checked-out")
